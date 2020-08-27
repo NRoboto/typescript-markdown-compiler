@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Col, Input, Container, Card, CardBody, Row, Button } from "reactstrap";
+import { PanelProps } from "./types";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+
+const Panel = ({ children }: PanelProps) => (
+  <Col xs="12" md="6" className="my-2 h-md-100">
+    <Card className="h-100">
+      <CardBody>{children}</CardBody>
+    </Card>
+  </Col>
+);
+
+const App = () => (
+  <Container className="h-100" fluid>
+    <Row className="h-100">
+      <Panel>
+        <Input type="textarea" name="md-input" className="h-100"></Input>
+      </Panel>
+      <Panel>
+        <p id="md-output">Test output!</p>
+      </Panel>
+    </Row>
+  </Container>
+);
 
 export default App;
