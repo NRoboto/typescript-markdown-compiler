@@ -89,11 +89,13 @@ class LineTokenizer {
     let currType: SymbolTypeOrText | undefined = undefined;
     let currValue: string = "";
 
-    const PushCurrent = (symbol: Symbol) => {
-      if (currType !== undefined && currValue !== "")
+    const PushCurrent = () => {
+      if (currType !== undefined && currValue !== "") {
+        const symbol = new Symbol(currValue[0], false);
         tokenArr.push(
           new Token(Token.TokenTypeFromSymbolType(currType), currValue, symbol)
         );
+      }
     };
 
     for (const symbol of symbols) {
@@ -103,8 +105,7 @@ class LineTokenizer {
         currType !== symbol.symbolType ||
         currValue.length >= symbol.maxMatches
       ) {
-        PushCurrent(symbol);
-
+        PushCurrent();
         currValue = "";
         currType = symbol.symbolType;
       }
@@ -112,9 +113,7 @@ class LineTokenizer {
       currValue += symbol.content;
     }
 
-    if (currValue[0] !== undefined)
-      PushCurrent(new Symbol(currValue[0], false));
-
+    PushCurrent();
     return tokenArr;
   }
 }
