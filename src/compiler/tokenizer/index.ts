@@ -35,19 +35,21 @@ export class Token {
 }
 
 export class Tokenizer {
-  readonly tokens = this.TokenGenerator();
-  constructor(readonly code: string[]) {}
+  readonly tokens: Token[] = [];
+  constructor(readonly code: string[]) {
+    this.GetTokens();
+  }
 
-  private *TokenGenerator() {
+  private GetTokens() {
     let lineTokenizer: LineTokenizer;
     for (const line of this.code) {
       lineTokenizer = new LineTokenizer(line);
 
       for (const token of lineTokenizer.tokens) {
-        yield token;
+        this.tokens.push(token);
       }
 
-      yield new Token("linebreak");
+      this.tokens.push(new Token("linebreak"));
     }
   }
 }
