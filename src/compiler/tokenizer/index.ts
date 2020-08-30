@@ -1,7 +1,6 @@
 import { SymbolType, SymbolTypeOrText } from "../symbolTable/types";
 import { Symbol } from "../symbolTable";
-
-type TokenType = "symbol" | "text" | "listnumber" | "linebreak";
+import { TokenType } from "./types";
 
 export class Token {
   readonly symbol: Symbol;
