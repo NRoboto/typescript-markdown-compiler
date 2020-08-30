@@ -1,48 +1,74 @@
 import { Token } from "../tokenizer";
 
-// TODO: Use seperate root node to prevent undefined issues.
+abstract class TreeNode {
+  private children?: TreeNode[];
+  constructor(readonly nodeID: number) {}
 
-class Node {
-  private children: Node[] = [];
-  constructor(readonly parent?: Node, readonly token?: Token) {}
+  AddChild(node: TreeNode) {
+    if (this.children === undefined) this.children = [];
 
-  AddChild(node: Node) {
     this.children.push(node);
     return node;
   }
 
   GetChildren() {
-    return this.children as readonly Node[];
+    return this.children as readonly TreeNode[];
   }
 }
 
+export class RootNode extends TreeNode {}
+
+class BranchNode extends TreeNode {
+  constructor(
+    nodeID: number,
+    readonly parent: TreeNode,
+    readonly token: Token
+  ) {
+    super(nodeID);
+  }
+}
+
+const IsBranchNode = (node: TreeNode): node is BranchNode =>
+  (node as BranchNode).token !== undefined;
+
 export class SyntacticAnalyser {
-  readonly rootNode: Node = new Node();
+  readonly rootNode = new RootNode(0);
 
   constructor(readonly tokens: Token[]) {
     this.GenerateAST();
   }
 
   private GenerateAST() {
-    let currNode = this.rootNode;
+    let currNode: TreeNode = this.rootNode;
+    let nodeID = 1;
 
     for (const token of this.tokens) {
-      if (
-        currNode.token?.symbol.symbolElement?.matchCloses &&
-        token.value === currNode.token.value
-      ) {
-        currNode = currNode.parent!;
-        continue;
-      }
-
-      if (token.type === "linebreak") {
-        while (currNode.token?.symbol.symbolElement?.newLineCloses) {
-          currNode = currNode.parent!;
+      // Handle close on match tag
+      if (IsBranchNode(currNode)) {
+        if (
+          currNode.token.symbol.symbolElement?.matchCloses &&
+          token.value === currNode.token.value
+        ) {
+          currNode = currNode.parent;
+          continue;
         }
       }
 
-      const newNode = currNode.AddChild(new Node(currNode, token));
+      // Handle close on line break
+      if (token.type === "linebreak") {
+        while (
+          IsBranchNode(currNode) &&
+          currNode.token.symbol.symbolElement?.newLineCloses
+        ) {
+          currNode = currNode.parent;
+        }
+      }
 
+      const newNode = currNode.AddChild(
+        new BranchNode(nodeID++, currNode, token)
+      );
+
+      // If token contains elements, set it to be the parent
       if (token.symbol.symbolElement?.hasChildren) {
         currNode = newNode;
       }
