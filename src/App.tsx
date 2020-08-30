@@ -1,6 +1,7 @@
 import React from "react";
 import { Col, Input, Container, Card, CardBody, Row } from "reactstrap";
 import { PanelProps } from "./types";
+import { Compiler } from "./compiler";
 
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -18,7 +19,8 @@ const App = () => {
   const [mdOutput, setMdOutput] = React.useState("");
 
   React.useEffect(() => {
-    setMdOutput(mdInput);
+    const compiler = new Compiler(mdInput);
+    setMdOutput(compiler.compiled);
   }, [mdInput]);
 
   return (
