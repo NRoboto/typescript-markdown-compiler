@@ -1,4 +1,5 @@
 import { Tokenizer, Token } from "./tokenizer";
+import { SyntacticAnalyser } from "./syntacticAnalyser";
 
 export class Compiler {
   readonly compiled: string = "";
@@ -10,5 +11,9 @@ export class Compiler {
     for (const token of tokens) {
       this.compiled += `{${token.type}, ${token.value}}, `;
     }
+
+    const syntacticAnalyser = new SyntacticAnalyser(tokens);
+
+    console.log(syntacticAnalyser.rootNode);
   }
 }
