@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Input, Container, Card, CardBody, Row, Button } from "reactstrap";
+import { Col, Input, Container, Card, CardBody, Row } from "reactstrap";
 import { PanelProps } from "./types";
 
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
@@ -13,17 +13,32 @@ const Panel = ({ children }: PanelProps) => (
   </Col>
 );
 
-const App = () => (
-  <Container className="h-100" fluid>
-    <Row className="h-100">
-      <Panel>
-        <Input type="textarea" name="md-input" className="h-100"></Input>
-      </Panel>
-      <Panel>
-        <p id="md-output">Test output!</p>
-      </Panel>
-    </Row>
-  </Container>
-);
+const App = () => {
+  const [mdInput, setMdInput] = React.useState("");
+  const [mdOutput, setMdOutput] = React.useState("");
+
+  React.useEffect(() => {
+    setMdOutput(mdInput);
+  }, [mdInput]);
+
+  return (
+    <Container className="h-100" fluid>
+      <Row className="h-100">
+        <Panel>
+          <Input
+            type="textarea"
+            name="md-input"
+            className="h-100"
+            onChange={(event) => setMdInput(event.target.value)}
+            value={mdInput}
+          ></Input>
+        </Panel>
+        <Panel>
+          <p id="md-output">{mdOutput}</p>
+        </Panel>
+      </Row>
+    </Container>
+  );
+};
 
 export default App;
