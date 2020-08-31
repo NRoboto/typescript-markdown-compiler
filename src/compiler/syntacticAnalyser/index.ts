@@ -1,6 +1,6 @@
 import { Token } from "../tokenizer";
 
-abstract class TreeNode {
+export abstract class TreeNode {
   private children?: TreeNode[];
   constructor(readonly nodeID: number) {}
 
@@ -18,7 +18,7 @@ abstract class TreeNode {
 
 export class RootNode extends TreeNode {}
 
-class BranchNode extends TreeNode {
+export class BranchNode extends TreeNode {
   constructor(
     nodeID: number,
     readonly parent: TreeNode,
@@ -28,7 +28,7 @@ class BranchNode extends TreeNode {
   }
 }
 
-const IsBranchNode = (node: TreeNode): node is BranchNode =>
+export const IsBranchNode = (node: TreeNode): node is BranchNode =>
   (node as BranchNode).token !== undefined;
 
 export class SyntacticAnalyser {
