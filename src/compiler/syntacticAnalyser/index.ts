@@ -43,11 +43,12 @@ export class SyntacticAnalyser {
     let nodeID = 1;
 
     for (const token of this.tokens) {
-      // Handle close on match tag
+      // Handle close on match tag, but not for consecutive tokens
       if (IsBranchNode(currNode)) {
         if (
           currNode.token.symbol.symbolElement?.matchCloses &&
-          token.value === currNode.token.value
+          token.value === currNode.token.value &&
+          nodeID !== currNode.nodeID + 1
         ) {
           currNode = currNode.parent;
           continue;

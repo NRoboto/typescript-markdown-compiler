@@ -8,6 +8,7 @@ export const symbolTable: Record<SymbolType, SymbolElement> = {
     hasChildren: true,
   },
   "*": {
+    maxMatches: 1,
     escapable: true,
     hasChildren: true,
     matchCloses: true,
