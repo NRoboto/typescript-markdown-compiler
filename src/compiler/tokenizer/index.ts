@@ -24,8 +24,6 @@ export class Token {
     }
   }
 
-  static TokenFromSymbols() {}
-
   static TokenTypeFromSymbolType(symbolType: SymbolTypeOrText): TokenType {
     if (symbolType === "text") return "text";
     else if (symbolType === "\\n") return "linebreak";
@@ -54,11 +52,9 @@ export class Tokenizer {
 }
 
 class LineTokenizer {
-  readonly tokens = this.GetTokens();
-  constructor(readonly line: string) {}
-
-  private GetTokens(): Token[] {
-    return this.SymbolsToTokens(this.GetSymbols());
+  readonly tokens: Token[] = [];
+  constructor(readonly line: string) {
+    this.tokens = this.SymbolsToTokens(this.GetSymbols());
   }
 
   private GetSymbols(): Symbol[] {
@@ -86,35 +82,56 @@ class LineTokenizer {
   }
 
   private SymbolsToTokens(symbols: Symbol[]): Token[] {
-    const tokenArr: Token[] = [];
-    let currType: SymbolTypeOrText | undefined = undefined;
-    let currValue: string = "";
-
-    const PushCurrent = () => {
-      if (currType !== undefined && currValue !== "") {
-        const symbol = new Symbol(currValue[0], false);
-        tokenArr.push(
-          new Token(Token.TokenTypeFromSymbolType(currType), currValue, symbol)
-        );
-      }
-    };
+    const tokenAssembler = new TokenAssembler();
 
     for (const symbol of symbols) {
-      if (currType === undefined) currType = symbol.symbolType;
-
-      if (
-        currType !== symbol.symbolType ||
-        currValue.length >= symbol.maxMatches
-      ) {
-        PushCurrent();
-        currValue = "";
-        currType = symbol.symbolType;
-      }
-
-      currValue += symbol.content;
+      tokenAssembler.AddSymbol(symbol);
     }
 
-    PushCurrent();
-    return tokenArr;
+    return tokenAssembler.GetTokens();
+  }
+}
+
+class TokenAssembler {
+  private tokenArr: Token[] = [];
+  private currType: SymbolTypeOrText | undefined = undefined;
+  private currValue: string = "";
+
+  private get currLength(): number {
+    return this.currValue.length;
+  }
+
+  AddSymbol(symbol: Symbol) {
+    if (this.StartsNewToken(symbol)) this.PushToken();
+    if (this.currType === undefined) this.currType = symbol.symbolType;
+
+    this.currValue += symbol.content;
+  }
+
+  GetTokens(): Token[] {
+    this.PushToken();
+    return this.tokenArr;
+  }
+
+  private PushToken() {
+    if (this.currType !== undefined && this.currValue !== "") {
+      this.tokenArr.push(
+        new Token(
+          Token.TokenTypeFromSymbolType(this.currType),
+          this.currValue,
+          new Symbol(this.currValue[0], false)
+        )
+      );
+    }
+
+    this.currType = undefined;
+    this.currValue = "";
+  }
+
+  private StartsNewToken(symbol: Symbol) {
+    return (
+      this.currType !== symbol.symbolType ||
+      this.currLength >= symbol.maxMatches
+    );
   }
 }
