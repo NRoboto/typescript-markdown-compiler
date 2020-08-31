@@ -1,22 +1,11 @@
 import { Token } from "../tokenizer";
+import { TreeNode } from "../nodes";
 
-export abstract class TreeNode {
-  private children?: TreeNode[];
-  constructor(readonly nodeID: number) {}
-
-  AddChild(node: TreeNode) {
-    if (this.children === undefined) this.children = [];
-
-    this.children.push(node);
-    return node;
-  }
-
-  GetChildren() {
-    return (this.children ?? []) as readonly TreeNode[];
+export class RootNode extends TreeNode {
+  constructor() {
+    super(0);
   }
 }
-
-export class RootNode extends TreeNode {}
 
 export class BranchNode extends TreeNode {
   constructor(
@@ -32,7 +21,7 @@ export const IsBranchNode = (node: TreeNode): node is BranchNode =>
   (node as BranchNode).token !== undefined;
 
 export class SyntacticAnalyser {
-  readonly rootNode = new RootNode(0);
+  readonly rootNode = new RootNode();
 
   constructor(readonly tokens: Token[]) {
     this.GenerateAST();
