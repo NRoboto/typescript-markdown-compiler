@@ -12,7 +12,7 @@ export abstract class TreeNode {
   }
 
   GetChildren() {
-    return this.children as readonly TreeNode[];
+    return (this.children ?? []) as readonly TreeNode[];
   }
 }
 
