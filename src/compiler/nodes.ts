@@ -1,3 +1,5 @@
+import { IsBranchNode } from "./syntacticAnalyser";
+
 export interface IVisitable {
   Accept: (visitor: IVisitor) => void;
 }
@@ -23,5 +25,20 @@ export abstract class TreeNode implements IVisitable {
 
   Accept(visitor: IVisitor) {
     visitor.VisitNode(this);
+  }
+}
+
+export class TreeLogger implements IVisitor {
+  constructor(readonly indentLevel: number = 0) {}
+
+  VisitNode(node: TreeNode) {
+    console.log(
+      "\t".repeat(this.indentLevel) +
+        `{${node.nodeID}, ${IsBranchNode(node) ? node.token.value : "root"}}`
+    );
+
+    node
+      .GetChildren()
+      .forEach((child) => child.Accept(new TreeLogger(this.indentLevel + 1)));
   }
 }
