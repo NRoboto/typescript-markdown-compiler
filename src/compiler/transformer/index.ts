@@ -51,14 +51,24 @@ class ASTNodeAssembler {
   AddNode(node: BranchNode, enterNode?: boolean) {
     let astType = this.ASTTypeFromToken(node.token);
 
+    if (this.prevNode && this.prevNode.nodeType !== "newline") {
+      switch (node.token.symbol.symbolType) {
+        case "#":
+        case "-":
+          debugger;
+          astType = "text";
+          enterNode = false;
+          break;
+      }
+    }
+
     const newNode = new ASTBranch(
       this.nodeID++,
       this.currNode,
       astType,
       node.token.value
     );
-    this.currNode.AddChild(newNode);
-    this.prevNode = this.currNode;
+    this.prevNode = this.currNode.AddChild(newNode);
     if (enterNode) this.currNode = newNode;
   }
 
