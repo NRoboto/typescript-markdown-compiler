@@ -1,24 +1,5 @@
 import { Token } from "../tokenizer";
-import { TreeNode } from "../nodes";
-
-export class RootNode extends TreeNode {
-  constructor() {
-    super(0);
-  }
-}
-
-export class BranchNode extends TreeNode {
-  constructor(
-    nodeID: number,
-    readonly parent: TreeNode,
-    readonly token: Token
-  ) {
-    super(nodeID);
-  }
-}
-
-export const IsBranchNode = (node: TreeNode): node is BranchNode =>
-  (node as BranchNode).token !== undefined;
+import { TreeNode, RootNode, IsBranchNode, BranchNode } from "../nodes";
 
 export class SyntacticAnalyser {
   readonly rootNode = new RootNode();

@@ -1,5 +1,6 @@
 import { Tokenizer, Token } from "./tokenizer";
 import { SyntacticAnalyser } from "./syntacticAnalyser";
+import { Transformer } from "./transformer";
 import { TreeLogger } from "./nodes";
 
 export class Compiler {
@@ -15,7 +16,6 @@ export class Compiler {
 
     const syntacticAnalyser = new SyntacticAnalyser(tokens);
 
-    const debugPrinter = new TreeLogger();
-    syntacticAnalyser.rootNode.Accept(debugPrinter);
+    const transformer = new Transformer(syntacticAnalyser.rootNode);
   }
 }
