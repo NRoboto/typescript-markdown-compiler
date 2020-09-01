@@ -70,7 +70,7 @@ export const astTable: Record<ASTNodeType, ASTElement> = {
     htmlTagContent: "ol",
   },
   ulistelement: {
-    htmlTagContent: "ul",
+    htmlTagContent: "li",
   },
   code: {
     htmlTagContent: "code",
