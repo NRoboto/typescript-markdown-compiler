@@ -3,5 +3,14 @@ export {
   TreeNode,
   RootNode,
   BranchNode,
+  ASTNode,
+  ASTRoot,
+  ASTBranch,
 } from "./nodes";
-export { IsBranchNode, TreeLogger } from "./utils";
+export {
+  IsBranchNode,
+  IsASTNode,
+  NodeHasParent,
+  TreeTraverser,
+  TreeLogger,
+} from "./utils";

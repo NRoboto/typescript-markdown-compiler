@@ -7,6 +7,8 @@ export const NodeHasParent = <T extends TreeNode>(
 
 export const IsBranchNode = (node: TreeNode): node is BranchNode =>
   (node as BranchNode).token !== undefined;
+export const IsASTNode = (node: TreeNode): node is ASTNode =>
+  (node as ASTNode).nodeType !== undefined;
 
 /**
  * Any class which traverses a tree should extend this class.

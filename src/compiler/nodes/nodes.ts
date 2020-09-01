@@ -41,3 +41,26 @@ export class BranchNode extends TreeNode {
     super(nodeID);
   }
 }
+
+export class ASTNode extends TreeNode {
+  constructor(nodeID: number, readonly nodeType: ASTNodeType) {
+    super(nodeID);
+  }
+}
+
+export class ASTRoot extends ASTNode {
+  constructor() {
+    super(0, "markdown");
+  }
+}
+
+export class ASTBranch extends ASTNode {
+  constructor(
+    nodeID: number,
+    readonly parent: TreeNode,
+    nodeType: ASTNodeType,
+    readonly content: string
+  ) {
+    super(nodeID, nodeType);
+  }
+}
