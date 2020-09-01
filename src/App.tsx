@@ -36,7 +36,7 @@ const App = () => {
           ></Input>
         </Panel>
         <Panel>
-          <p id="md-output">{mdOutput}</p>
+          <p id="md-output" dangerouslySetInnerHTML={{ __html: mdOutput }}></p>
         </Panel>
       </Row>
     </Container>
