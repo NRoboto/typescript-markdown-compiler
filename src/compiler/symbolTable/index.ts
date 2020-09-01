@@ -1,4 +1,10 @@
-import { SymbolType, SymbolElement, SymbolTypeOrText } from "./types";
+import {
+  SymbolType,
+  SymbolElement,
+  SymbolTypeOrText,
+  ASTNodeType,
+  ASTElement,
+} from "./types";
 
 export const symbolTable: Record<SymbolType, SymbolElement> = {
   "#": {
@@ -44,6 +50,42 @@ export const symbolTable: Record<SymbolType, SymbolElement> = {
     maxMatches: 1,
     escapable: true,
     hasChildren: false,
+  },
+};
+
+export const astTable: Record<ASTNodeType, ASTElement> = {
+  heading: {
+    htmlTagContent: "h",
+  },
+  bold: {
+    htmlTagContent: "b",
+  },
+  italic: {
+    htmlTagContent: "i",
+  },
+  blockquote: {
+    htmlTagContent: "blockquote",
+  },
+  olistelement: {
+    htmlTagContent: "ol",
+  },
+  ulistelement: {
+    htmlTagContent: "ul",
+  },
+  code: {
+    htmlTagContent: "code",
+  },
+  text: {
+    htmlTagContent: "",
+  },
+  newline: {
+    htmlTagContent: "br",
+  },
+  hr: {
+    htmlTagContent: "hr",
+  },
+  markdown: {
+    htmlTagContent: "div",
   },
 };
 
