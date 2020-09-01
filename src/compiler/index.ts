@@ -1,7 +1,7 @@
 import { Tokenizer, Token } from "./tokenizer";
 import { SyntacticAnalyser } from "./syntacticAnalyser";
 import { Transformer } from "./transformer";
-import { TreeLogger } from "./nodes";
+import { CodeGenerator } from "./codeGenerator";
 
 export class Compiler {
   readonly compiled: string = "";
@@ -10,12 +10,12 @@ export class Compiler {
     const tokenizer = new Tokenizer(input.split(/\r?\n/));
     const tokens: Token[] = tokenizer.tokens;
 
-    for (const token of tokens) {
-      this.compiled += `{${token.type}, ${token.value}}, `;
-    }
-
     const syntacticAnalyser = new SyntacticAnalyser(tokens);
 
     const transformer = new Transformer(syntacticAnalyser.rootNode);
+
+    const codeGenerator = new CodeGenerator(transformer.astRoot);
+    console.log(codeGenerator.html);
+    this.compiled = codeGenerator.html;
   }
 }

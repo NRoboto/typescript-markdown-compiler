@@ -14,9 +14,11 @@ import { ASTNodeType } from "../symbolTable/types";
 import { Token } from "../tokenizer";
 
 export class Transformer {
+  readonly astRoot: ASTRoot;
   constructor(readonly root: RootNode) {
     const astTransformer = new ASTTransformer();
     root.Accept(astTransformer);
+    this.astRoot = astTransformer.root;
 
     const treeLogger = new TreeLogger<ASTBranch>(
       (node) => `{${node.nodeID}, ${node.nodeType}, ${node.content}}`
@@ -27,7 +29,7 @@ export class Transformer {
 
 class ASTTransformer extends TreeTraverser {
   private readonly nodeAssembler = new ASTNodeAssembler();
-  get root(): RootNode {
+  get root(): ASTRoot {
     return this.nodeAssembler.root;
   }
 
@@ -55,7 +57,7 @@ class ASTNodeAssembler {
       switch (node.token.symbol.symbolType) {
         case "#":
         case "-":
-          debugger;
+        case ">":
           astType = "text";
           enterNode = false;
           break;
