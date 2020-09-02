@@ -80,9 +80,11 @@ export const astTable: Record<ASTNodeType, ASTElement> = {
   },
   newline: {
     htmlTagContent: "br",
+    tagIsSelfClosing: true,
   },
   hr: {
     htmlTagContent: "hr",
+    tagIsSelfClosing: true,
   },
   markdown: {
     htmlTagContent: "div",

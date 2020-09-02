@@ -26,4 +26,5 @@ export type ASTNodeType =
 
 export type ASTElement = {
   htmlTagContent: string;
+  tagIsSelfClosing?: boolean;
 };
