@@ -4,6 +4,12 @@ import { Token } from "../tokenizer";
 
 export abstract class TreeNode implements IVisitable {
   private children?: this[];
+  public get childCount() {
+    return this.children?.length ?? 0;
+  }
+  public get lastChild() {
+    return this.children ? this.children[this.childCount - 1] : undefined;
+  }
   constructor(readonly nodeID: number) {}
 
   AddChild(node: this) {
@@ -15,6 +21,10 @@ export abstract class TreeNode implements IVisitable {
 
   GetChildren() {
     return (this.children ?? []) as readonly this[];
+  }
+
+  GetChild(index: number) {
+    return this.GetChildren()[index];
   }
 
   HasChildren() {
