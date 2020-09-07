@@ -53,7 +53,11 @@ export class BranchNode extends TreeNode {
 }
 
 export class ASTNode extends TreeNode {
-  constructor(nodeID: number, readonly nodeType: ASTNodeType) {
+  constructor(
+    nodeID: number,
+    readonly nodeType: ASTNodeType,
+    public count: number = 1
+  ) {
     super(nodeID);
   }
 }
@@ -67,10 +71,11 @@ export class ASTRoot extends ASTNode {
 export class ASTBranch extends ASTNode {
   constructor(
     nodeID: number,
-    readonly parent: TreeNode,
+    readonly parent: ASTNode,
     nodeType: ASTNodeType,
-    readonly content: string
+    readonly content: string,
+    count: number = 1
   ) {
-    super(nodeID, nodeType);
+    super(nodeID, nodeType, count);
   }
 }

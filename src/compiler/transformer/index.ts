@@ -21,7 +21,8 @@ export class Transformer {
     this.astRoot = astTransformer.root;
 
     const treeLogger = new TreeLogger<ASTBranch>(
-      (node) => `{${node.nodeID}, ${node.nodeType}, ${node.content}}`
+      (node) =>
+        `{${node.nodeID}, ${node.nodeType}, ${node.content}, ${node.count}}`
     );
     astTransformer.root.Accept(treeLogger);
   }
@@ -34,13 +35,14 @@ class ASTTransformer extends TreeTraverser {
   }
 
   VisitNode(node: TreeNode) {
+    let nodeAdded = false;
     const hasChildren = node.HasChildren();
     if (IsBranchNode(node)) {
-      this.nodeAssembler.AddNode(node, hasChildren);
+      nodeAdded = this.nodeAssembler.AddNode(node, hasChildren);
     }
 
     super.VisitNode(node);
-    if (hasChildren) this.nodeAssembler.ExitNode();
+    if (hasChildren && nodeAdded) this.nodeAssembler.ExitNode();
   }
 }
 
@@ -53,10 +55,19 @@ class ASTNodeAssembler {
   AddNode(node: BranchNode, enterNode?: boolean) {
     let astType = this.ASTTypeFromToken(node.token);
 
+    if (
+      astType === "boldit" &&
+      this.currNode.nodeType === "boldit" &&
+      this.currNode.childCount === 0
+    ) {
+      this.currNode.count++;
+      return false;
+    }
+
     if (astType === "newline") {
       if (this.newLineInQueue) this.AddNewLine();
       this.newLineInQueue = true;
-      return;
+      return false;
     }
 
     if (this.newLineInQueue) {
@@ -66,7 +77,7 @@ class ASTNodeAssembler {
       ) {
         this.currNode = this.currNode.lastChild;
         this.newLineInQueue = true;
-        return;
+        return false;
       }
     } else {
       switch (node.token.symbol.symbolType) {
@@ -85,20 +96,27 @@ class ASTNodeAssembler {
       this.nodeID++,
       this.currNode,
       astType,
-      node.token.value
+      node.token.value,
+      node.token.value.length
     );
+    this.currNode.AddChild(newNode);
     if (enterNode) this.currNode = newNode;
+
+    return true;
   }
 
   ExitNode() {
-    if (NodeHasParent(this.currNode)) this.currNode = this.currNode.parent;
+    if (this.currNode instanceof ASTBranch) {
+      this.currNode = this.currNode.parent;
+    }
   }
 
   private AddNewLine() {
     if (!this.newLineInQueue) return;
-    this.currNode.AddChild(
-      new ASTBranch(this.nodeID++, this.currNode, "newline", "\\n")
-    );
+    if (this.nodeID !== 1)
+      this.currNode.AddChild(
+        new ASTBranch(this.nodeID++, this.currNode, "newline", "\\n")
+      );
     this.newLineInQueue = false;
   }
 
@@ -115,7 +133,7 @@ class ASTNodeAssembler {
           case "#":
             return "heading";
           case "*":
-            return "bold";
+            return "boldit";
           case ">":
             return "blockquote";
           case "-":
