@@ -1,3 +1,5 @@
+import { ASTNode } from "../nodes";
+
 export type SymbolType = "#" | "*" | ">" | "-" | "`" | "\\" | "  " | "\\n";
 export type SymbolTypeOrText = SymbolType | "text";
 
@@ -11,8 +13,7 @@ export type SymbolElement = {
 
 export type ASTNodeType =
   | "heading"
-  | "bold"
-  | "italic"
+  | "boldit"
   | "blockquote"
   | "olistelement"
   | "ulistelement"
@@ -25,5 +26,7 @@ export type ASTNodeType =
   | "markdown";
 
 export type ASTElement = {
-  htmlTagContent: string;
+  // htmlTagContent: string;
+  htmlTagGenerator: (node: ASTNode) => string | string[];
+  tagIsSelfClosing?: boolean;
 };

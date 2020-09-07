@@ -4,6 +4,12 @@ import { Token } from "../tokenizer";
 
 export abstract class TreeNode implements IVisitable {
   private children?: this[];
+  public get childCount() {
+    return this.children?.length ?? 0;
+  }
+  public get lastChild() {
+    return this.children ? this.children[this.childCount - 1] : undefined;
+  }
   constructor(readonly nodeID: number) {}
 
   AddChild(node: this) {
@@ -15,6 +21,10 @@ export abstract class TreeNode implements IVisitable {
 
   GetChildren() {
     return (this.children ?? []) as readonly this[];
+  }
+
+  GetChild(index: number) {
+    return this.GetChildren()[index];
   }
 
   HasChildren() {
@@ -43,7 +53,11 @@ export class BranchNode extends TreeNode {
 }
 
 export class ASTNode extends TreeNode {
-  constructor(nodeID: number, readonly nodeType: ASTNodeType) {
+  constructor(
+    nodeID: number,
+    readonly nodeType: ASTNodeType,
+    public count: number = 1
+  ) {
     super(nodeID);
   }
 }
@@ -57,10 +71,11 @@ export class ASTRoot extends ASTNode {
 export class ASTBranch extends ASTNode {
   constructor(
     nodeID: number,
-    readonly parent: TreeNode,
+    readonly parent: ASTNode,
     nodeType: ASTNodeType,
-    readonly content: string
+    readonly content: string,
+    count: number = 1
   ) {
-    super(nodeID, nodeType);
+    super(nodeID, nodeType, count);
   }
 }
