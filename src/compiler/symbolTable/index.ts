@@ -55,39 +55,37 @@ export const symbolTable: Record<SymbolType, SymbolElement> = {
 
 export const astTable: Record<ASTNodeType, ASTElement> = {
   heading: {
-    htmlTagContent: "h",
+    htmlTagGenerator: (node) => `h${node.count}`,
   },
-  bold: {
-    htmlTagContent: "b",
-  },
-  italic: {
-    htmlTagContent: "i",
+  boldit: {
+    htmlTagGenerator: (node) =>
+      node.count >= 3 ? ["b", "i"] : node.count === 2 ? "b" : "i",
   },
   blockquote: {
-    htmlTagContent: "blockquote",
+    htmlTagGenerator: (_node) => "blockquote",
   },
   olistelement: {
-    htmlTagContent: "ol",
+    htmlTagGenerator: (_node) => "ol",
   },
   ulistelement: {
-    htmlTagContent: "li",
+    htmlTagGenerator: (_node) => "li",
   },
   code: {
-    htmlTagContent: "code",
+    htmlTagGenerator: (_node) => "code",
   },
   text: {
-    htmlTagContent: "",
+    htmlTagGenerator: (_node) => "",
   },
   newline: {
-    htmlTagContent: "br",
+    htmlTagGenerator: (_node) => "br",
     tagIsSelfClosing: true,
   },
   hr: {
-    htmlTagContent: "hr",
+    htmlTagGenerator: (node) => `hr${node.count}`,
     tagIsSelfClosing: true,
   },
   markdown: {
-    htmlTagContent: "div",
+    htmlTagGenerator: (_node) => "div",
   },
 };
 
