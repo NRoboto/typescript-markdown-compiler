@@ -8,14 +8,9 @@ export class Compiler {
 
   constructor(readonly input: string) {
     const tokenizer = new Tokenizer(input.split(/\r?\n/));
-    const tokens: Token[] = tokenizer.tokens;
-
-    const syntacticAnalyser = new SyntacticAnalyser(tokens);
-
+    const syntacticAnalyser = new SyntacticAnalyser(tokenizer.tokens);
     const transformer = new Transformer(syntacticAnalyser.rootNode);
-
     const codeGenerator = new CodeGenerator(transformer.astRoot);
-    console.log(codeGenerator.html);
     this.compiled = codeGenerator.html;
   }
 }
