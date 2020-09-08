@@ -6,9 +6,9 @@ import { Compiler } from "./compiler";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-const Panel = ({ children }: PanelProps) => (
+const Panel = ({ className, children }: PanelProps) => (
   <Col xs="12" md="6" className="my-2 h-md-100">
-    <Card className="h-100">
+    <Card className={`h-100 ${className}`}>
       <CardBody>{children}</CardBody>
     </Card>
   </Col>
@@ -26,7 +26,7 @@ const App = () => {
   return (
     <Container className="h-100" fluid>
       <Row className="h-100">
-        <Panel>
+        <Panel className="shadow-sm">
           <Input
             type="textarea"
             name="md-input"
@@ -35,7 +35,7 @@ const App = () => {
             value={mdInput}
           ></Input>
         </Panel>
-        <Panel>
+        <Panel className="shadow-sm">
           <p id="md-output" dangerouslySetInnerHTML={{ __html: mdOutput }}></p>
         </Panel>
       </Row>
