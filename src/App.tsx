@@ -9,7 +9,7 @@ import "./App.css";
 const Panel = ({ className, children }: PanelProps) => (
   <Col xs="12" md="6" className="my-2 h-md-100">
     <Card className={`h-100 ${className}`}>
-      <CardBody>{children}</CardBody>
+      <CardBody className="d-flex flex-column">{children}</CardBody>
     </Card>
   </Col>
 );
@@ -30,9 +30,11 @@ const App = () => {
           <Input
             type="textarea"
             name="md-input"
-            className="h-100"
+            className="flex-fill"
+            style={{ resize: "none" }}
             onChange={(event) => setMdInput(event.target.value)}
             value={mdInput}
+            autoFocus
           ></Input>
         </Panel>
         <Panel className="shadow-sm">
