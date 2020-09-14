@@ -118,14 +118,26 @@ const MdToolbar = ({ textSelected, ToolbarButtonHandler }: MdToolbarProps) => (
   </ButtonToolbar>
 );
 
-type SelectedInputPos =
-  | { selectionStart: number; selectionEnd: number }
-  | undefined;
+class TextSelection {
+  public get isSelection(): boolean {
+    return (
+      this.selectionStart !== undefined &&
+      this.selectionEnd !== undefined &&
+      this.selectedText !== ""
+    );
+  }
+  constructor(
+    readonly cursorPos: number = 0,
+    readonly selectedText: string = "",
+    readonly selectionStart?: number,
+    readonly selectionEnd?: number
+  ) {}
+}
 
 const App = () => {
   const [mdInput, setMdInput] = React.useState("");
   const [mdOutput, setMdOutput] = React.useState("");
-  const [selectedInput, setSelectedInput] = React.useState<SelectedInputPos>();
+  const [selectedInput, setSelectedInput] = React.useState(new TextSelection());
 
   const OnInputSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const inputEle = event.target as HTMLInputElement;
@@ -139,12 +151,18 @@ const App = () => {
       selectionEnd === null ||
       selectionStart === selectionEnd
     )
-      setSelectedInput(undefined);
+      setSelectedInput(new TextSelection());
     else
-      setSelectedInput({
-        selectionStart,
-        selectionEnd,
-      });
+      setSelectedInput(
+        new TextSelection(
+          selectionEnd,
+          mdInput.slice(selectionStart, selectionEnd),
+          selectionStart,
+          selectionEnd
+        )
+      );
+  };
+
   const InputReplaceHandler = (buttonItem: MdToolbarButtonItem) => {
     }
   };
