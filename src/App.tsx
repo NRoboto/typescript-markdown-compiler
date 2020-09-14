@@ -29,32 +29,63 @@ type MdToolbarButtonItem = {
   label: string;
   tooltip: string;
   requiresSelectedText?: boolean;
+  SelectionReplacer?: (selection: string) => string;
+  LineReplacer?: (line: string, selectedLinePos: TextSelection) => string;
+  InputReplacer?: (input: string, selectedInputPos: TextSelection) => string;
 };
 
 const mdToolbarButtons: MdToolbarButtonItem[][] = [
   [
-    { label: "h1", tooltip: "Add title" },
-    { label: "h2", tooltip: "Add subtitle" },
-    { label: "h3", tooltip: "Add subsubtitle" },
+    { label: "h1", tooltip: "Add title", LineReplacer: (line) => `# ${line}` },
+    {
+      label: "h2",
+      tooltip: "Add subtitle",
+      LineReplacer: (line) => `## ${line}`,
+    },
+    {
+      label: "h3",
+      tooltip: "Add subsubtitle",
+      LineReplacer: (line) => `### ${line}`,
+    },
   ],
   [
     {
       label: "bold",
       tooltip: "Make selected text bold",
       requiresSelectedText: true,
+      SelectionReplacer: (selection) => `**${selection}**`,
     },
     {
       label: "italic",
       tooltip: "Make selected text italic",
       requiresSelectedText: true,
+      SelectionReplacer: (selection) => `*${selection}*`,
     },
     {
       label: "code",
       tooltip: "Make selected text into code",
       requiresSelectedText: true,
+      SelectionReplacer: (selection) => `\`${selection}\``,
     },
   ],
-  [{ label: "hr", tooltip: "Add a horizontal rule" }],
+  [
+    {
+      label: "hr",
+      tooltip: "Add a horizontal rule",
+      InputReplacer: (input, selectedPos) => {
+        const newLinePos = input.indexOf(
+          "\\n",
+          selectedPos?.selectionEnd ?? input.length
+        );
+        if (newLinePos === -1) return input;
+        const [beforeLinebreak, afterLinebreak] = [
+          input.slice(0, newLinePos),
+          input.slice(newLinePos),
+        ];
+        return `${beforeLinebreak}\\n\\n---\\n${afterLinebreak}`;
+      },
+    },
+  ],
 ];
 
 type MdToolbarProps = {
