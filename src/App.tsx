@@ -1,18 +1,9 @@
 import React from "react";
-import {
-  Col,
-  Input,
-  Container,
-  Card,
-  CardBody,
-  Row,
-  ButtonToolbar,
-  ButtonGroup,
-  Button,
-  UncontrolledTooltip,
-} from "reactstrap";
+import { Col, Input, Container, Card, CardBody, Row } from "reactstrap";
 import { PanelProps } from "./types";
 import { Compiler } from "./compiler";
+import { MdToolbar, MdToolbarButtonItem } from "./toolbar";
+import { GetLineByIndex, ReplaceTextSection } from "./common";
 
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -25,98 +16,7 @@ const Panel = ({ className, children }: PanelProps) => (
   </Col>
 );
 
-type MdToolbarButtonItem = {
-  label: string;
-  tooltip: string;
-  requiresSelectedText?: boolean;
-  SelectionReplacer?: (selection: string) => string;
-  LineReplacer?: (line: string, selectedLinePos: TextSelection) => string;
-  InputReplacer?: (input: string, selectedInputPos: TextSelection) => string;
-};
-
-const mdToolbarButtons: MdToolbarButtonItem[][] = [
-  [
-    { label: "h1", tooltip: "Add title", LineReplacer: (line) => `# ${line}` },
-    {
-      label: "h2",
-      tooltip: "Add subtitle",
-      LineReplacer: (line) => `## ${line}`,
-    },
-    {
-      label: "h3",
-      tooltip: "Add subsubtitle",
-      LineReplacer: (line) => `### ${line}`,
-    },
-  ],
-  [
-    {
-      label: "bold",
-      tooltip: "Make selected text bold",
-      requiresSelectedText: true,
-      SelectionReplacer: (selection) => `**${selection}**`,
-    },
-    {
-      label: "italic",
-      tooltip: "Make selected text italic",
-      requiresSelectedText: true,
-      SelectionReplacer: (selection) => `*${selection}*`,
-    },
-    {
-      label: "code",
-      tooltip: "Make selected text into code",
-      requiresSelectedText: true,
-      SelectionReplacer: (selection) => `\`${selection}\``,
-    },
-  ],
-  [
-    {
-      label: "hr",
-      tooltip: "Add a horizontal rule",
-      InputReplacer: (input, selectedPos) => {
-        const newLinePos =
-          GetLineByIndex(input, selectedPos.cursorPos).nextLinebreakIndex + 1;
-        if (newLinePos === -1) return input;
-        const [beforeLinebreak, afterLinebreak] = [
-          input.slice(0, newLinePos),
-          input.slice(newLinePos),
-        ];
-        return `${beforeLinebreak}\n---\n${afterLinebreak}`;
-      },
-    },
-  ],
-];
-
-type MdToolbarProps = {
-  textSelected: boolean;
-  ToolbarButtonHandler: (toolbarButtonItem: MdToolbarButtonItem) => void;
-};
-
-const MdToolbar = ({ textSelected, ToolbarButtonHandler }: MdToolbarProps) => (
-  <ButtonToolbar className="mb-2">
-    {mdToolbarButtons.map((group, groupID) => (
-      <ButtonGroup key={groupID}>
-        {group.map((item, itemID) => (
-          <>
-            <Button
-              id={`toolbar-tooltip-${groupID}-${itemID}`}
-              disabled={item.requiresSelectedText && !textSelected}
-              onClick={() => ToolbarButtonHandler(item)}
-            >
-              {item.label}
-            </Button>
-            <UncontrolledTooltip
-              target={`toolbar-tooltip-${groupID}-${itemID}`}
-            >
-              {item.tooltip}
-            </UncontrolledTooltip>
-          </>
-        ))}
-      </ButtonGroup>
-    ))}
-  </ButtonToolbar>
-);
-
-class TextSelection {
+export class TextSelection {
   public get isSelection(): boolean {
     return (
       this.selectionStart !== undefined &&
@@ -131,31 +31,6 @@ class TextSelection {
     readonly selectionEnd?: number
   ) {}
 }
-
-const GetLineByIndex = (input: string, index: number) => {
-  const inputLines = input.split(/\r?\n/);
-  let [prevLineBreakIndex, nextLinebreakIndex]: [number, number] = [0, 0];
-  let line: string = "";
-  for (line of inputLines) {
-    nextLinebreakIndex = prevLineBreakIndex + line.length;
-
-    if (index >= prevLineBreakIndex && index <= nextLinebreakIndex) break;
-    prevLineBreakIndex = nextLinebreakIndex + 1;
-  }
-
-  return {
-    line,
-    prevLineBreakIndex,
-    nextLinebreakIndex,
-  };
-};
-
-const ReplaceTextSection = (
-  text: string,
-  begin: number,
-  end: number,
-  newText: string
-) => text.slice(0, begin) + newText + text.slice(end);
 
 const App = () => {
   const [mdInput, setMdInput] = React.useState("");
