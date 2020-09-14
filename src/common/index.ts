@@ -1,1 +1,6 @@
-export { SurroundWithTags, InRange } from "./utils";
+export {
+  SurroundWithTags,
+  InRange,
+  GetLineByIndex,
+  ReplaceTextSection,
+} from "./utils";
