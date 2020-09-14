@@ -90,9 +90,10 @@ const mdToolbarButtons: MdToolbarButtonItem[][] = [
 
 type MdToolbarProps = {
   textSelected: boolean;
+  ToolbarButtonHandler: (toolbarButtonItem: MdToolbarButtonItem) => void;
 };
 
-const MdToolbar = ({ textSelected }: MdToolbarProps) => (
+const MdToolbar = ({ textSelected, ToolbarButtonHandler }: MdToolbarProps) => (
   <ButtonToolbar className="mb-2">
     {mdToolbarButtons.map((group, groupID) => (
       <ButtonGroup key={groupID}>
@@ -101,6 +102,7 @@ const MdToolbar = ({ textSelected }: MdToolbarProps) => (
             <Button
               id={`toolbar-tooltip-${groupID}-${itemID}`}
               disabled={item.requiresSelectedText && !textSelected}
+              onClick={() => ToolbarButtonHandler(item)}
             >
               {item.label}
             </Button>
@@ -143,6 +145,8 @@ const App = () => {
         selectionStart,
         selectionEnd,
       });
+  const InputReplaceHandler = (buttonItem: MdToolbarButtonItem) => {
+    }
   };
 
   React.useEffect(() => {
@@ -154,7 +158,10 @@ const App = () => {
     <Container className="h-100" fluid>
       <Row className="h-100">
         <Panel className="shadow-sm">
-          <MdToolbar textSelected={selectedInput !== undefined} />
+          <MdToolbar
+            textSelected={selectedInput !== undefined}
+            ToolbarButtonHandler={InputReplaceHandler}
+          />
           <Input
             type="textarea"
             name="md-input"
