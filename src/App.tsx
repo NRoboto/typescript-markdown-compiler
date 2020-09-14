@@ -73,16 +73,14 @@ const mdToolbarButtons: MdToolbarButtonItem[][] = [
       label: "hr",
       tooltip: "Add a horizontal rule",
       InputReplacer: (input, selectedPos) => {
-        const newLinePos = input.indexOf(
-          "\\n",
-          selectedPos?.selectionEnd ?? input.length
-        );
+        const newLinePos =
+          GetLineByIndex(input, selectedPos.cursorPos).nextLinebreakIndex + 1;
         if (newLinePos === -1) return input;
         const [beforeLinebreak, afterLinebreak] = [
           input.slice(0, newLinePos),
           input.slice(newLinePos),
         ];
-        return `${beforeLinebreak}\\n\\n---\\n${afterLinebreak}`;
+        return `${beforeLinebreak}\n---\n${afterLinebreak}`;
       },
     },
   ],
@@ -134,6 +132,31 @@ class TextSelection {
   ) {}
 }
 
+const GetLineByIndex = (input: string, index: number) => {
+  const inputLines = input.split(/\r?\n/);
+  let [prevLineBreakIndex, nextLinebreakIndex]: [number, number] = [0, 0];
+  let line: string = "";
+  for (line of inputLines) {
+    nextLinebreakIndex = prevLineBreakIndex + line.length;
+
+    if (index >= prevLineBreakIndex && index <= nextLinebreakIndex) break;
+    prevLineBreakIndex = nextLinebreakIndex + 1;
+  }
+
+  return {
+    line,
+    prevLineBreakIndex,
+    nextLinebreakIndex,
+  };
+};
+
+const ReplaceTextSection = (
+  text: string,
+  begin: number,
+  end: number,
+  newText: string
+) => text.slice(0, begin) + newText + text.slice(end);
+
 const App = () => {
   const [mdInput, setMdInput] = React.useState("");
   const [mdOutput, setMdOutput] = React.useState("");
@@ -164,7 +187,40 @@ const App = () => {
   };
 
   const InputReplaceHandler = (buttonItem: MdToolbarButtonItem) => {
+    if (!selectedInput.isSelection) return;
+
+    if (buttonItem.SelectionReplacer) {
+      setMdInput(
+        ReplaceTextSection(
+          mdInput,
+          selectedInput.selectionStart!,
+          selectedInput.selectionEnd!,
+          buttonItem.SelectionReplacer(selectedInput.selectedText)
+        )
+      );
     }
+
+    if (buttonItem.LineReplacer) {
+      const currLine = GetLineByIndex(mdInput, selectedInput.cursorPos);
+
+      setMdInput(
+        ReplaceTextSection(
+          mdInput,
+          currLine.prevLineBreakIndex,
+          currLine.nextLinebreakIndex,
+          buttonItem.LineReplacer(
+            mdInput.slice(
+              currLine.prevLineBreakIndex,
+              currLine.nextLinebreakIndex
+            ),
+            selectedInput
+          )
+        )
+      );
+    }
+
+    if (buttonItem.InputReplacer)
+      setMdInput(buttonItem.InputReplacer(mdInput, selectedInput));
   };
 
   React.useEffect(() => {
