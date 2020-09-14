@@ -17,19 +17,18 @@ const Panel = ({ className, children }: PanelProps) => (
 );
 
 export class TextSelection {
+  readonly selectedText: string;
   public get isSelection(): boolean {
-    return (
-      this.selectionStart !== undefined &&
-      this.selectionEnd !== undefined &&
-      this.selectedText !== ""
-    );
+    return this.selectionStart !== this.selectionEnd;
   }
   constructor(
     readonly cursorPos: number = 0,
-    readonly selectedText: string = "",
     readonly selectionStart?: number,
-    readonly selectionEnd?: number
-  ) {}
+    readonly selectionEnd?: number,
+    readonly inputText: string = ""
+  ) {
+    this.selectedText = inputText.slice(selectionStart, selectionEnd);
+  }
 }
 
 const App = () => {
@@ -39,37 +38,31 @@ const App = () => {
 
   const OnInputSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const inputEle = event.target as HTMLInputElement;
-    const [selectionStart, selectionEnd] = [
-      inputEle.selectionStart,
-      inputEle.selectionEnd,
-    ];
-
-    if (
-      selectionStart === null ||
-      selectionEnd === null ||
-      selectionStart === selectionEnd
-    )
-      setSelectedInput(new TextSelection());
-    else
-      setSelectedInput(
-        new TextSelection(
-          selectionEnd,
-          mdInput.slice(selectionStart, selectionEnd),
-          selectionStart,
-          selectionEnd
-        )
-      );
+    setSelectedInput(
+      new TextSelection(
+        inputEle.selectionStart ?? undefined,
+        inputEle.selectionStart ?? undefined,
+        inputEle.selectionEnd ?? undefined,
+        mdInput
+      )
+    );
   };
 
   const InputReplaceHandler = (buttonItem: MdToolbarButtonItem) => {
-    if (!selectedInput.isSelection) return;
+    if (buttonItem.requiresSelectedText && !selectedInput.isSelection) return;
 
     if (buttonItem.SelectionReplacer) {
+      if (
+        selectedInput.selectionStart === undefined ||
+        selectedInput.selectionEnd === undefined
+      )
+        return;
+
       setMdInput(
         ReplaceTextSection(
           mdInput,
-          selectedInput.selectionStart!,
-          selectedInput.selectionEnd!,
+          selectedInput.selectionStart,
+          selectedInput.selectionEnd,
           buttonItem.SelectionReplacer(selectedInput.selectedText)
         )
       );
@@ -77,19 +70,12 @@ const App = () => {
 
     if (buttonItem.LineReplacer) {
       const currLine = GetLineByIndex(mdInput, selectedInput.cursorPos);
-
       setMdInput(
         ReplaceTextSection(
           mdInput,
           currLine.prevLineBreakIndex,
           currLine.nextLinebreakIndex,
-          buttonItem.LineReplacer(
-            mdInput.slice(
-              currLine.prevLineBreakIndex,
-              currLine.nextLinebreakIndex
-            ),
-            selectedInput
-          )
+          buttonItem.LineReplacer(currLine.line, selectedInput)
         )
       );
     }
@@ -108,7 +94,7 @@ const App = () => {
       <Row className="h-100">
         <Panel className="shadow-sm">
           <MdToolbar
-            textSelected={selectedInput !== undefined}
+            textSelected={selectedInput.isSelection}
             ToolbarButtonHandler={InputReplaceHandler}
           />
           <Input
