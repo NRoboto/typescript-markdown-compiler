@@ -7,8 +7,8 @@ import { Precompiler } from "./precompiler";
 export class Compiler {
   readonly compiled: string = "";
 
-  constructor(readonly input: string) {
-    const precompiler = new Precompiler(input, true);
+  constructor(readonly input: string, readonly sanitizeHTML: boolean) {
+    const precompiler = new Precompiler(input, sanitizeHTML);
     const tokenizer = new Tokenizer(precompiler.output.split(/\r?\n/));
     const syntacticAnalyser = new SyntacticAnalyser(tokenizer.tokens);
     const transformer = new Transformer(syntacticAnalyser.rootNode);

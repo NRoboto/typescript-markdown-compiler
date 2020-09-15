@@ -35,6 +35,7 @@ const App = () => {
   const [mdInput, setMdInput] = React.useState("");
   const [mdOutput, setMdOutput] = React.useState("");
   const [selectedInput, setSelectedInput] = React.useState(new TextSelection());
+  const [sanitizeHTML, setSanitizeHTML] = React.useState(true);
 
   const OnInputSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const inputEle = event.target as HTMLInputElement;
@@ -85,9 +86,9 @@ const App = () => {
   };
 
   React.useEffect(() => {
-    const compiler = new Compiler(mdInput);
+    const compiler = new Compiler(mdInput, sanitizeHTML);
     setMdOutput(compiler.compiled);
-  }, [mdInput]);
+  }, [mdInput, sanitizeHTML]);
 
   return (
     <Container className="h-100" fluid>
@@ -95,7 +96,9 @@ const App = () => {
         <Panel className="shadow-sm">
           <MdToolbar
             textSelected={selectedInput.isSelection}
+            sanitizeHTML={sanitizeHTML}
             ToolbarButtonHandler={InputReplaceHandler}
+            SanitizeCheckHandler={(checked) => setSanitizeHTML(checked)}
           />
           <Input
             type="textarea"

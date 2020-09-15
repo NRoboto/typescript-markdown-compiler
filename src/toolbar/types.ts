@@ -2,7 +2,9 @@ import { TextSelection } from "../App";
 
 export type MdToolbarProps = {
   textSelected: boolean;
+  sanitizeHTML: boolean;
   ToolbarButtonHandler: (toolbarButtonItem: MdToolbarButtonItem) => void;
+  SanitizeCheckHandler: (checked: boolean) => void;
 };
 
 export type MdToolbarButtonItem = {
