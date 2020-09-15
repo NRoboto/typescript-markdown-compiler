@@ -59,7 +59,11 @@ export const astTable: Record<ASTNodeType, ASTElement> = {
   },
   boldit: {
     htmlTagGenerator: (node) =>
-      node.count >= 3 ? ["b", "i"] : node.count === 2 ? "b" : "i",
+      node.count >= 3
+        ? ["strong", "emph"]
+        : node.count === 2
+        ? "strong"
+        : "emph",
   },
   blockquote: {
     htmlTagGenerator: (_node) => "blockquote",
