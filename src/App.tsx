@@ -3,7 +3,11 @@ import { Col, Input, Container, Card, CardBody, Row } from "reactstrap";
 import { PanelProps } from "./types";
 import { Compiler } from "./compiler";
 import { MdToolbar, MdToolbarButtonItem } from "./toolbar";
-import { GetLineByIndex, ReplaceTextSection } from "./common";
+import {
+  GetLineByIndex,
+  ReplaceTextSection,
+  useSemiPersistentState,
+} from "./common";
 
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -32,10 +36,13 @@ export class TextSelection {
 }
 
 const App = () => {
-  const [mdInput, setMdInput] = React.useState("");
+  const [mdInput, setMdInput] = useSemiPersistentState("mdInput", "");
   const [mdOutput, setMdOutput] = React.useState("");
   const [selectedInput, setSelectedInput] = React.useState(new TextSelection());
-  const [sanitizeHTML, setSanitizeHTML] = React.useState(true);
+  const [sanitizeHTML, setSanitizeHTML] = useSemiPersistentState(
+    "sanitizeHTML",
+    true
+  );
 
   const OnInputSelect = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const inputEle = event.target as HTMLInputElement;
