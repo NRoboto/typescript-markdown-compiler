@@ -29,7 +29,7 @@ export class Precompiler {
         if (!rule.lineMatch.exec(line)) continue;
 
         codeLines[targetLineIndex] = rule.targetLineModifier(targetLine);
-        if (rule.targetLineRelative !== 0) linesToRemove.push(i);
+        linesToRemove.push(rule.prevLineMustBeBlank ? i - 1 : i);
         break;
       }
     });
