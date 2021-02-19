@@ -40,9 +40,6 @@ export class Precompiler {
   }
 
   private SanitizeHTML() {
-    this._output = this._output
-      .replace(/&/g, "&nbsp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+    this._output = this._output.replace(/&/g, "&nbsp;").replace(/</g, "&lt;");
   }
 }
